@@ -12,7 +12,7 @@ function sum( array ) {
 
 function plot_matrix(muh, sigma) {
 
-document.getElementById("title").innerHTML = "<h3>Î¼<sub>L</sub> = 12;&nbsp; Î¼<sub>H</sub> = " + muh + ";&nbsp;Ïƒ = "+sigma+"</h3>" ;
+document.getElementById("title").innerHTML = "<h3>μ<sub>L</sub> = 12;&nbsp; μ<sub>H</sub> = " + muh + ";&nbsp;σ = "+sigma+"</h3>" ;
 
 //alert("matrix_data_12_" + muh + "_" + sigma + ".json");
     
@@ -26,8 +26,8 @@ d3.json("matrix_data_12_" + muh + "_" + sigma + ".json", function(data) {
         gamma_val = gamma_idx / ( nvalues-1 );
 
         var out = "";
-        out += "Î³ = " + gamma_val + "<br>";
-        out += "Î´Î¨ = " + gamma_val + "<br>";
+        out += "γ = " + gamma_val + "<br>";
+        out += "δΨ = " + gamma_val + "<br>";
         
         // no nash equilibria
         if (  sum( dat[ [ gamma_val, deltapsi_val ] ][0].slice(6,12 ) ) == 0 )
@@ -59,8 +59,8 @@ d3.json("matrix_data_12_" + muh + "_" + sigma + ".json", function(data) {
         gamma_val = gamma_idx / ( nvalues-1 );
 
         var out = "";
-        out += "Î³ = " + gamma_val + "<br>";
-        out += "Î´Î¨ = " + gamma_val + "<br>";
+        out += "γ = " + gamma_val + "<br>";
+        out += "δΨ = " + gamma_val + "<br>";
         
         out  = dat[ [ gamma_val, deltapsi_val ] ][0][3];
         
