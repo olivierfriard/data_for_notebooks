@@ -1,0 +1,23 @@
+body {
+  font-family: sans-serif;
+}
+
+.line {
+  stroke-width: 1;
+  fill: none;
+}
+
+text {
+ font-family: sans-serif;
+ font-size: 11pt;
+}
+
+p {
+ font-family: sans-serif;
+ font-size: 12pt;
+}
+
+div#legend {
+  margin-left: 100px;
+  width: 500px;
+}
