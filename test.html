@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8">
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.4.3/d3.js"></script>
+
+
+<!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.10.0/d3.js"></script>-->
 <style>
 body {
   font-family: sans-serif;
@@ -92,8 +95,8 @@ d3.json("matrix_data_12_" + muh + "_" + sigma + ".json", function(data) {
         gamma_val = gamma_idx / ( nvalues-1 );
 
         var out = "";
-        out += "γ = " + gamma_val + "<br>";
-        out += "δΨ = " + gamma_val + "<br>";
+        out += "&gamma; = " + gamma_val + "<br>";
+        out += "&delta;&psi; = " + gamma_val + "<br>";
         
         out  = dat[ [ gamma_val, deltapsi_val ] ][0][3];
         
@@ -237,8 +240,8 @@ d3.json("matrix_data_12_" + muh + "_" + sigma + ".json", function(data) {
     matrixplotA.append("rect").attr("height", h).attr("width", w).attr("fill", "none").attr("stroke", "black").attr("stroke-width", 1).attr("pointer-events", "none");
     matrixplotA.append("text").text("Actor").attr("id", "corrtitle").attr("x", w / 2).attr("y", -pad.top / 2).attr("dominant-baseline", "middle").attr("text-anchor", "middle");
 
-    matrixplotA.append("text").attr("id", "xaxis").attr("class", "axes").attr("x", w / 2).attr("y", h + pad.bottom * 0.7).text("Fertilisation success (δψ)").attr("dominant-baseline", "middle").attr("text-anchor", "middle").attr("fill", "black");
-    matrixplotA.append("text").attr("id", "yaxis").attr("class", "axes").attr("x", -pad.left * 0.8).attr("y", h / 2 + 20).text("Costs of cheating (γ)").attr("dominant-baseline", "middle").attr("text-anchor", "middle").attr("transform", "rotate(270," + (-pad.left * 0.8) + "," + (h / 2) + ")").attr("fill", "black");
+    matrixplotA.append("text").attr("id", "xaxis").attr("class", "axes").attr("x", w / 2).attr("y", h + pad.bottom * 0.7).text("Fertilisation success (\u03B4\u03C8) ").attr("dominant-baseline", "middle").attr("text-anchor", "middle").attr("fill", "black");
+    matrixplotA.append("text").attr("id", "yaxis").attr("class", "axes").attr("x", -pad.left * 0.8).attr("y", h / 2 + 20).text("Costs of cheating (\u03B3)").attr("dominant-baseline", "middle").attr("text-anchor", "middle").attr("transform", "rotate(270," + (-pad.left * 0.8) + "," + (h / 2) + ")").attr("fill", "black");
 
 
     svg = d3.select("div#plot").append("svg").attr("height", totalh).attr("width", totalw);
@@ -277,8 +280,8 @@ d3.json("matrix_data_12_" + muh + "_" + sigma + ".json", function(data) {
     matrixplotB.append("rect").attr("height", h).attr("width", w).attr("fill", "none").attr("stroke", "black").attr("stroke-width", 1).attr("pointer-events", "none");
     matrixplotB.append("text").text("Observer").attr("id", "corrtitle").attr("x", w / 2).attr("y", -pad.top / 2).attr("dominant-baseline", "middle").attr("text-anchor", "middle");
     
-    matrixplotB.append("text").attr("id", "xaxis").attr("class", "axes").attr("x", w / 2).attr("y", h + pad.bottom * 0.7).text("Fertilisation success (δψ)").attr("dominant-baseline", "middle").attr("text-anchor", "middle").attr("fill", "black");
-    matrixplotB.append("text").attr("id", "yaxis").attr("class", "axes").attr("x", -pad.left * 0.8).attr("y", h / 2 + 20).text("Costs of cheating (γ)").attr("dominant-baseline", "middle").attr("text-anchor", "middle").attr("transform", "rotate(270," + (-pad.left * 0.8) + "," + (h / 2) + ")").attr("fill", "black");
+    matrixplotB.append("text").attr("id", "xaxis").attr("class", "axes").attr("x", w / 2).attr("y", h + pad.bottom * 0.7).text("Fertilisation success (\u03B4\u03C8)").attr("dominant-baseline", "middle").attr("text-anchor", "middle").attr("fill", "black");
+    matrixplotB.append("text").attr("id", "yaxis").attr("class", "axes").attr("x", -pad.left * 0.8).attr("y", h / 2 + 20).text("Costs of cheating (\u03B3)").attr("dominant-baseline", "middle").attr("text-anchor", "middle").attr("transform", "rotate(270," + (-pad.left * 0.8) + "," + (h / 2) + ")").attr("fill", "black");
   }   
   );
 }
