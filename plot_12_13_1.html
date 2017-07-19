@@ -2,9 +2,291 @@
 <html>
 <head>
 <meta charset="utf-8">
-<link rel=stylesheet type="text/css" href="matrix.css">
 <script type="text/javascript" src="d3.js"></script>
+<style>
+body {
+  font-family: sans-serif;
+}
+
+.line {
+  stroke-width: 1;
+  fill: none;
+}
+
+text {
+ font-family: sans-serif;
+ font-size: 11pt;
+}
+
+p {
+ font-family: sans-serif;
+ font-size: 12pt;
+}
+
+div#legend {
+  margin-left: 100px;
+  width: 500px;
+}
+</style>
+
 </head>
+
+<script>
+var arrayUnique = function(a) {
+    return a.reduce(function(p, c) {if (p.indexOf(c) < 0) p.push(c); return p; }, []);
+    };
+
+function sum( array ) {
+    var s = 0;
+    for (i in array)
+       s += array[i] ;
+    return s
+    }
+
+
+function plot_matrix(muh, sigma) {
+
+document.getElementById("title").innerHTML = "<h3>μ<sub>L</sub> = 12;&nbsp; μ<sub>H</sub> = " + muh + ";&nbsp;σ = "+sigma+"</h3>" ;
+
+//alert("matrix_data_12_" + muh + "_" + sigma + ".json");
+    
+d3.json("matrix_data_12_" + muh + "_" + sigma + ".json", function(data) {
+      
+    function resultsA(row, col) {
+        var delta_idx = parseInt(col);
+        var gamma_idx = parseInt(row);
+
+        deltapsi_val = delta_idx / ( nvalues-1 );
+        gamma_val = gamma_idx / ( nvalues-1 );
+
+        var out = "";
+        out += "γ = " + gamma_val + "<br>";
+        out += "δΨ = " + gamma_val + "<br>";
+        
+        // no nash equilibria
+        if (  sum( dat[ [ gamma_val, deltapsi_val ] ][0].slice(6,12 ) ) == 0 )
+            {
+            return "<br><b>We found no Nash Equilibrium strategies<br>for this game.</b>";
+             } 
+        
+        var outA = "<table style=\"width:100%; text-align:center; border-width:1px; border-style:solid; border-collapse: collapse;\"><thead><colgroup><col span=\"10\" style=\"border-width:1px; border-style:solid;\"></colgroup><tr><th rowspan=\"2\">Nash Eq.</th><th colspan=\"6\" style=\"border-width:1px; border-style:solid;\">Ka</th><th rowspan=\"2\">Payoff</th></tr><tr><th>0.0</th><th>0.2</th><th>0.4</th><th>0.6</th><th>0.8</th><th>1.0</th></tr></thead><tbody style=\"border-width:1px; border-style:solid;\">";
+
+        for ( i in  dat[ [ gamma_val, deltapsi_val ] ] )
+            {
+            outA += "<tr><td>#"+parseInt(parseInt(i)+1)+"</td>";
+            var j = 0;
+            for (j = 6; j<= 11; j++)
+                outA += "<td>" +   parseFloat(dat[ [ gamma_val, deltapsi_val ] ][i][j]).toFixed(2)   + "</td>";
+            //payoff
+            outA += "<td>" +  parseFloat( dat[ [ gamma_val, deltapsi_val ] ][i][4] ).toFixed(2) + "</td></tr>";
+            }
+        outA += "</tbody></table>";
+     return outA;
+     }
+
+
+    function resultsB(row, col) {
+        var delta_idx = parseInt(col);
+        var gamma_idx = parseInt(row);
+
+        deltapsi_val = delta_idx / ( nvalues-1 );
+        gamma_val = gamma_idx / ( nvalues-1 );
+
+        var out = "";
+        out += "γ = " + gamma_val + "<br>";
+        out += "δΨ = " + gamma_val + "<br>";
+        
+        out  = dat[ [ gamma_val, deltapsi_val ] ][0][3];
+        
+        
+        // no nash equilibria
+        if ( dat[ [ gamma_val, deltapsi_val ] ][0][ 6 ] + dat[ [ gamma_val, deltapsi_val ] ][0][7] +dat[ [ gamma_val, deltapsi_val ] ][0][8]+dat[ [ gamma_val, deltapsi_val ] ][0][9]+dat[[gamma_val, deltapsi_val ] ][0][ 10 ] +dat[[gamma_val, deltapsi_val ] ][0][11] == 0)
+            return "";
+        
+        var outB = "<table  style=\"width:100%; text-align:center; border-width:1px; border-style:solid; border-collapse: collapse;\"><thead><colgroup><col span=\"10\" style=\"border-width:1px; border-style:solid;\"></colgroup><tr><th rowspan=\"2\">Nash Eq.</th><th></th><th colspan=\"6\" style=\"border-width:1px; border-style:solid;\">Ko</th><th rowspan=\"2\">Payoff</th></tr><tr><th></th><th>0.0</th><th>0.2</th><th>0.4</th><th>0.6</th><th>0.8</th><th>1.0</th></tr></thead><tbody style=\"border-width:1px; border-style:solid;\">";
+
+        for ( i in  dat[ [ gamma_val, deltapsi_val ] ] )
+           {
+            outB += "<tr><td rowspan=\"2\">#"+parseInt(parseInt(i)+1)+"</td>";
+            outB += "<td>b=0</td>";
+            for (j = 12; j<= 17; j++)
+                outB += "<td>" +   parseFloat(dat[ [ gamma_val, deltapsi_val ] ][i][ j ]).toFixed(2)   + "</td>";
+            //payoff
+            outB += "<td rowspan=\"2\">" + parseFloat( dat[ [ gamma_val, deltapsi_val ] ][i][5] ).toFixed(2) + "</td>";
+
+            outB += "</tr>";
+
+            outB += "<tr  style=\"border-bottom: 1px solid black;\">";
+            outB += "<td>b=1</td>";
+            for (j = 18; j<= 23; j++)
+                outB += "<td>" +   parseFloat(dat[ [ gamma_val, deltapsi_val ] ][i][ j ]).toFixed(2)   + "</td>";
+
+            outB += "</tr>";
+           }
+        outB += "</tbody></table>";
+
+      return outB;
+     }
+
+    
+    var cells, colorScale, colors, corXscale, corYscale, corZscale, corr, corrplot, drawScatter, h, i, innerPad, j, pad, svg, totalh, totalw, w;
+    h = 300;
+    w = h;
+    pad = {      left: 120,       top: 40,       right: 40,       bottom: 50     };
+    innerPad = 5;
+    totalh = h + pad.top + pad.bottom;
+    totalw = (w + pad.left + pad.right) ;
+    svg = d3.select("div#plot").append("svg").attr("height", totalh).attr("width", totalw);
+    matrixplotA = svg.append("g").attr("id", "matrixplotA").attr("transform", "translate(" + pad.left + "," + pad.top + ")");
+
+    var values = [];
+    for (i in data.data) values.push(data.data[ i ][0]);
+    var nvalues = arrayUnique(values).length;
+
+    corXscale = d3.scale.ordinal().domain(d3.range(nvalues)).rangeBands([0, w]);
+    corYscale = d3.scale.ordinal().domain(d3.range(nvalues)).rangeBands([h, 0]);
+    //corZscale = d3.scale.linear().domain([-2, -1, 0, 1]).range([ "white", "blue", "red","green"]);
+    corZscale = d3.scale.linear().domain([-2,-1,0,1,2,3]).range([ "white","blue","red","yellow","red","green"]);
+     
+    var dat = {};
+    var max_strategy_nb = 0;
+    for (i in data.data)
+        {
+        if ([data.data[i][0], data.data[ i ][1] ] in dat)
+            dat[[data.data[i][0], data.data[ i ][1]]].push( data.data[i]);
+        else
+            dat[[data.data[i][0], data.data[ i ][1]]] = [data.data[i]];
+        max_strategy_nb = Math.max(max_strategy_nb, dat[[data.data[i][0], data.data[ i ][1]]].length );
+        }
+
+    //alert( max_strategy_nb );
+
+    // matrix plot
+    matrixA = [];
+    matrixB = [];
+    var val = 0;
+    for (i in data.data)
+        {
+        
+        if ( sum(data.data[i].slice(13, 18)) > sum(data.data[i].slice(19, 24)) )
+            {//b = 0
+            valA = data.data[i][ 2 ];
+            valB = data.data[i][ 3 ];
+            }
+        else
+            {//b = 1
+            valA = data.data[i][ 2 ] + 2;
+            valB = data.data[i][ 3 ] + 2;
+            }
+
+        if ( dat[ [ data.data[ i ][0],data.data[ i ][1] ] ].length > 1 )  /* more strategies -> blue */
+            {
+            valA = dat[ [ data.data[ i ][0],data.data[ i ][1] ] ].length/max_strategy_nb - 2; 
+            valB = dat[ [ data.data[ i ][0],data.data[ i ][1] ] ].length/max_strategy_nb - 2 ;
+            }
+        else 
+            {
+            if ( sum(data.data[i].slice(6,12)) == 0.0)  /* no convergence -> white */
+                { 
+                valA = -2;
+                valB = -2;
+                }
+            }
+
+        matrixA.push({
+            row: data.data[ i ][0]*(nvalues-1),
+            col: data.data[ i ][1]*(nvalues-1),
+            value: valA
+            });
+
+        matrixB.push({
+            row: data.data[ i ][0]*(nvalues-1),
+            col: data.data[ i ][1]*(nvalues-1),
+            value: valB
+            });
+        }
+
+    cells = matrixplotA.selectAll("empty").data(matrixA).enter().append("rect").attr("class", "cell").attr("x", function(d) {
+      return corXscale(d.col);
+    }).attr("y", function(d) {
+      return corYscale(d.row);
+    }).attr("width", corXscale.rangeBand()).attr("height", corYscale.rangeBand()).attr("fill", function(d) {
+      return corZscale(d.value);
+    }).attr("stroke", "none").attr("stroke-width", 2).on("mouseover", function(d) {
+
+          document.getElementById("tableA").innerHTML =  resultsA(d.row, d.col) ;
+          document.getElementById("tableB").innerHTML =  resultsB(d.row, d.col) ;
+
+          d3.select(this).attr("stroke", "black");  // highligth cell
+          matrixplotA.append("text").attr("class", "corrlabel").attr("x", corXscale(d.col)).attr("y", h + pad.bottom * 0.2).text(d.col/(nvalues-1)).attr("dominant-baseline", "middle").attr("text-anchor", "middle");
+          return matrixplotA.append("text").attr("class", "corrlabel").attr("y", corYscale(d.row)).attr("x", -pad.left * 0.1).text(d.row/(nvalues-1)).attr("dominant-baseline", "middle").attr("text-anchor", "end");
+
+
+    }).on("mouseout", function() {
+      d3.selectAll("text.corrlabel").remove();
+      d3.selectAll("text#corrtext").remove();
+
+      document.getElementById("tableA").innerHTML = "" ;
+      document.getElementById("tableB").innerHTML = "" ;      
+
+      return d3.select(this).attr("stroke", "none");
+
+    }).on("click", function(d) {
+        
+        
+            });
+
+    matrixplotA.append("rect").attr("height", h).attr("width", w).attr("fill", "none").attr("stroke", "black").attr("stroke-width", 1).attr("pointer-events", "none");
+    matrixplotA.append("text").text("Actor").attr("id", "corrtitle").attr("x", w / 2).attr("y", -pad.top / 2).attr("dominant-baseline", "middle").attr("text-anchor", "middle");
+
+    matrixplotA.append("text").attr("id", "xaxis").attr("class", "axes").attr("x", w / 2).attr("y", h + pad.bottom * 0.7).text("Fertilisation success (Î´Ïˆ)").attr("dominant-baseline", "middle").attr("text-anchor", "middle").attr("fill", "black");
+    matrixplotA.append("text").attr("id", "yaxis").attr("class", "axes").attr("x", -pad.left * 0.8).attr("y", h / 2 + 20).text("Costs of cheating (Î³)").attr("dominant-baseline", "middle").attr("text-anchor", "middle").attr("transform", "rotate(270," + (-pad.left * 0.8) + "," + (h / 2) + ")").attr("fill", "black");
+
+
+    svg = d3.select("div#plot").append("svg").attr("height", totalh).attr("width", totalw);
+    matrixplotB = svg.append("g").attr("id", "matrixplotB").attr("transform", "translate(" + pad.left + "," + pad.top + ")");
+    
+    corZscale = d3.scale.linear().domain([-2,-1,0,1,2,3]).range([ "white","blue","red","yellow","red","green"]);
+
+    cells = matrixplotB.selectAll("empty").data(matrixB).enter().append("rect").attr("class", "cell")
+      .attr("x", function(d) {
+      return corXscale(d.col);
+    }).attr("y", function(d) {
+      return corYscale(d.row);
+    }).attr("width", corXscale.rangeBand()).attr("height", corYscale.rangeBand()).attr("fill", function(d) {
+      return corZscale(d.value);
+    }).attr("stroke", "none").attr("stroke-width", 2).on("mouseover", function(d) {
+
+          document.getElementById("tableA").innerHTML =  resultsA(d.row, d.col) ;
+          document.getElementById("tableB").innerHTML =  resultsB(d.row, d.col) ;
+
+          d3.select(this).attr("stroke", "black");  // highligth cell
+
+         matrixplotB.append("text").attr("class", "corrlabel").attr("x", corXscale(d.col)).attr("y", h + pad.bottom * 0.2).text(d.col/(nvalues-1)).attr("dominant-baseline", "middle").attr("text-anchor", "middle");
+         return matrixplotB.append("text").attr("class", "corrlabel").attr("y", corYscale(d.row)).attr("x", -pad.left * 0.1).text(d.row/(nvalues-1)).attr("dominant-baseline", "middle").attr("text-anchor", "end");
+
+    }).on("mouseout", function() {
+      d3.selectAll("text.corrlabel").remove();
+      d3.selectAll("text#corrtext").remove();
+
+      document.getElementById("tableA").innerHTML = "" ;
+      document.getElementById("tableB").innerHTML = "" ;      
+
+      return d3.select(this).attr("stroke", "none");
+
+    }).on("click", function(d) {    });
+
+    matrixplotB.append("rect").attr("height", h).attr("width", w).attr("fill", "none").attr("stroke", "black").attr("stroke-width", 1).attr("pointer-events", "none");
+    matrixplotB.append("text").text("Observer").attr("id", "corrtitle").attr("x", w / 2).attr("y", -pad.top / 2).attr("dominant-baseline", "middle").attr("text-anchor", "middle");
+    
+    matrixplotB.append("text").attr("id", "xaxis").attr("class", "axes").attr("x", w / 2).attr("y", h + pad.bottom * 0.7).text("Fertilisation success (Î´Ïˆ)").attr("dominant-baseline", "middle").attr("text-anchor", "middle").attr("fill", "black");
+    matrixplotB.append("text").attr("id", "yaxis").attr("class", "axes").attr("x", -pad.left * 0.8).attr("y", h / 2 + 20).text("Costs of cheating (Î³)").attr("dominant-baseline", "middle").attr("text-anchor", "middle").attr("transform", "rotate(270," + (-pad.left * 0.8) + "," + (h / 2) + ")").attr("fill", "black");
+  }   
+  );
+}
+
+</script>
+
 <body>
 
 <div id="title"></div>
