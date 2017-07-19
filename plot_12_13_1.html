@@ -60,8 +60,8 @@ d3.json("matrix_data_12_" + muh + "_" + sigma + ".json", function(data) {
         gamma_val = gamma_idx / ( nvalues-1 );
 
         var out = "";
-        out += "γ = " + gamma_val + "<br>";
-        out += "δΨ = " + gamma_val + "<br>";
+        out += "&gamma; = " + gamma_val + "<br>";
+        out += "&delta;&psi; = " + gamma_val + "<br>";
         
         // no nash equilibria
         if (  sum( dat[ [ gamma_val, deltapsi_val ] ][0].slice(6,12 ) ) == 0 )
