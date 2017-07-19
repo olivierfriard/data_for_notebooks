@@ -1,1 +1,1 @@
-function echo(a){alert(a);} 
+function f(a){alert(a);} 
